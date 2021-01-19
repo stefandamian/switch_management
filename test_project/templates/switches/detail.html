@@ -1,0 +1,185 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ports for {{switch.IP}}</title>
+<!--{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static '/css/detail.css'%}">-->
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="//d3js.org/topojson.v1.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<style>{% include 'switches/static/css/detail.css'%}
+</style>
+</head>
+<body>
+	<div id="navbar">
+		<a href="/switches">Home</a>
+		<a href="/" style="float:right">Logout</a>
+		<a href="delete" style="float:right;">Delete switch</a>
+		{% if user.is_superuser %}
+		<a href="/admin" style="float:right">Admin</a>
+		{%endif%}
+		<div id="dropswitches">
+			<button id="dropbtn">Switches</button>
+    		<div id="dropdown-content">
+      			{% for i in user.switches.all %}
+      				<a href="/switches/{{i.id}}">{{i.IP}}</a>
+      			{% endfor %}
+      		</div>
+  		</div>
+	</div> 
+	<div id="inside">
+		
+		<div id="main_info" >
+			<div style="display: inline-block;">
+				<b>Switch info</b>:<br>
+				IP: {{switch.IP}},<br> 
+				username: {{switch.username}},<br>
+				password: {% if switch.password == "" %}no password{%else%}{{switch.password}}{%endif%}<br>
+				device: {{switch.device_name}}<br>
+				number of ports: {{switch.ports_number}}
+				{% if error %}
+					{% include "error_case.html" %}
+				{% endif %}
+				{% if form %}<p style="display: none;"><label for="id_numbers">Numbers:</label> <input type="text" name="numbers" maxlength="250" required="" id="id_numbers"></p>{%endif%}
+			</div>
+			<div id='cpu_res' style="display: none;float: right;"></div>
+		</div>
+
+		<a href="/switches/{{switch.id}}/edit"><div id="edit_botton">Edit</div></a>
+		{%if ports%}
+		<a href="/switches/{{switch.id}}/ref"><div id="refresh_botton">Refresh</div></a>
+		<div class="vlans_button"  style=" width: 130px;" onclick="show_cpu()" ondblclick='window.location.href="/switches/{{switch.id}}/cpu_monitor"'>CPU monitor</div>
+		<br>
+		<div id="the_switch">
+			<div id="switch_name">{{switch.device_name}}</div>
+			{% for port in ports%}
+			{% if port.set == 1 %}
+			<a onclick="js_change({{port.number}})"><div style="background-color: {% if port.port_state and port.link_state %}#00e600{%else%}{%if port.port_state%}#FFBF00{%else%}#FA5858{%endif%}{%endif%};" title="Port Number:{{port.number}}
+vlan:{{port.vlan}}
+state:{% if port.port_state and port.link_state %}Up{%else%}{%if port.port_state%}Down{%else%}Admin Down{%endif%}{%endif%}
+tag:{%if port.tag %}Tagged{%else%}Untagged{%endif%}{% if port.speed != 0%}
+speed:{{port.speed}}
+duplex:{{port.duplex}}{%endif%}" class="port" id="port{{port.number}}" >{{port.number}}</div></a>
+			{%endif%}
+			{%endfor%}
+			<br style="width: 950px;">
+			{% for port in ports%}
+			{% if port.set == 0 %}
+			
+			<a onclick="js_change({{port.number}})"><div style="background-color: {% if port.port_state and port.link_state %}#00e600{%else%}{%if port.port_state%}#FFBF00{%else%}#FA5858{%endif%}{%endif%};" title="Port Number:{{port.number}}
+vlan:{{port.vlan}}
+state:{% if port.port_state and port.link_state %}Up{%else%}{%if port.port_state%}Down{%else%}Admin Down{%endif%}{%endif%}
+tag:{%if port.tag %}Tagged{%else%}Untagged{%endif%}{% if port.speed != 0%}
+speed:{{port.speed}}
+duplex:{{port.duplex}}{%endif%}" class="port" id="port{{port.number}}" >{{port.number}}</div></a>
+			{%endif%}
+			{%endfor%}
+		</div>
+		{% else %}
+		<div>No ports available</div>
+		{%endif%} 
+		<br>
+		<form id="want_sub" method="post" action="">
+			{% csrf_token %}
+		<p style="display: none"><label for="id_numbers">Numbers:</label> <input type="text" name="numbers" maxlength="250" required="" id="id_numbers" value=""></p>
+		<div id="change_botton" onclick="form_port()";><a id="change" ></a></div>
+		<div id="change_botton_vlan" onclick="form_vlan()"><a id="port_no_vlan" ></a></div>
+		</form>
+		<br>
+
+		{%if vlans%}
+		<div class="vlans_button" id="vlans_button1" onclick="vlan_show()">Vlans</div>
+		<div class="vlans_button" style="width: 100px;" onclick="print_ports({{ports_state}},{{switch.ports_number}})">Port state</div>
+		<div class="vlans_button" style="width: 80px;" onclick="duplex_show({{ports_duplex}},{{switch.ports_number}})">Duplex</div>
+		
+		<br>
+		<div id="vlans_detail">
+			<div class="vlans_button" id="vlans_button2" onclick="vlan_hide()" style="width: 120px;" onmouseover="">Hide vlans</div>		
+			<a href="/switches/{{switch.id}}/add_vlan"><div class="vlans_button"  style="width: 95px;">Add Vlan</div></a>
+			<ul id="vlan_list">
+				{% for vlan in vlans%}
+				<li class="vlan_obj">
+					<span class='tag'>{{vlan.vlan_name}} [{{vlan.VID}}]:</span>
+					<ul class='in_tag'>
+						<li onclick="show_vlan('{{vlan.vlan_name}}',{{ports_vlan}},{{switch.ports_number}})"><span class='tag' style="margin-bottom: 1px;">Ports</span>
+							<ul class='in_tag'>
+								<li>{%if vlan.vlan_name in used_vlans%}{% for port in ports %}{% if port.vlan == vlan.vlan_name %}{{port.number}} {%endif%}{%endfor%}{%else%}no ports assigned{%endif%}
+								</li>
+							</ul>
+						</li>
+						<div style="margin-top: 7px;"></div>
+						<a class='button' href="/switches/{{switch.id}}/edit_vlan/{{vlan.VID}}"><li id='edit_vlan_button'> Edit</li></a>
+						<a class='button' href="/switches/{{switch.id}}/del_vlan/{{vlan.VID}}"><li id="remove_vlan_button">Remove</li></a>
+						<a class='button' href="/switches/{{switch.id}}/{{vlan.VID}}/add_port"><li id="add_port_vlan_button">Add Ports</li></a>
+					</ul>
+				</li>
+				{%endfor%}
+				
+			</ul>
+
+		</div>
+		{%endif%}
+		<br>
+		<a href="/switches" style="padding: 5px;" class="back">Go back</a>
+		<div id="notes_continer"><p id="notes_title">Notes:</p>
+			<div id="notes"></div>
+		</div>
+	</div>
+
+<script type="text/javascript" src="cpu_monitor/get_data"></script>
+<script>{% include 'switches/static/js/detail.js'%}
+	var cpu_data=[['Time','Cpu'],['no_value',0]]
+	function drawChart() {
+		var data = google.visualization.arrayToDataTable(cpu_data);	
+		var options = {
+			title: 'CPU usage',
+			curveType: 'function',
+			legend: { position: 'bottom' }
+			};
+		var chart = new google.visualization.LineChart(document.getElementById('cpu_res'))
+		chart.clearChart()
+		chart.draw(data, options);
+	}
+	
+	show_cpu('pass')
+	
+	function show_cpu(r='not_pass'){
+		d=document.getElementById('cpu_res');
+		if (d.style.display==='none' & r!='pass'){
+			d.style.display='inline-block';
+		}
+		else if (r!='pass'){
+			d.style.display='none'
+		}
+		d3.json("cpu_monitor/get_data", function(error, data){
+		    if(error) return console.error(error);
+		    if (cpu_data.length>1)
+		    {
+		    	cpu_data=[['Time','Cpu']]
+		    }
+		    if (data.length!=0)
+		    {
+		    	for (let k=0;k<data.length;k++)
+		    	{
+		    		cpu_data.push([data[k].time,Number(data[k].cpu)])
+		   		}
+			}
+			else{
+				cpu_data=[['Time','Cpu'],['no_value',-1]]
+			}
+		})
+		google.charts.load('current', {'packages':['corechart']});		
+		google.charts.setOnLoadCallback(drawChart);
+		if (d.style.display!='none')
+		{
+			setTimeout("show_cpu('pass')", 3500);
+		}
+	}
+		
+</script>
+
+
+</body>
+</html>

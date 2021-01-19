@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Add Vlan {{switch.IP}}</title>
+</head>
+<style>
+body{
+	background-color: #d5d5d5;
+	height: 100%;
+}
+div{
+	padding: 8px;
+}
+#button_quit{
+	box-sizing: border-box;
+	display: inline-block;
+	font-style: initial;
+	text-decoration:none;
+	padding: 5px;
+	border:2px black solid;
+	width: 60px;
+	text-align:center;
+	margin-top: 10px;
+	color:black;
+	background-color: coral;
+}
+#button_quit:hover{	color: red;}
+</style>
+<body>
+	<form method="POST">
+		<fieldset>
+			{% csrf_token %}
+			<legend>Vlan info:</legend>
+			{% if error %}{% include "error_case.html" %}{% endif %}
+			<div><label for="id_vlan_name">Vlan name:</label> <input type="text" name="vlan_name" maxlength="35" required="", value="{{vlan.vlan_name}}" id="id_vlan_name"></div>
+			<div><label for="id_VID">VID:</label> <input type="number" name="VID" min="0" value="{{vlan.VID}}" required="" id="id_VID"></div>
+			<input type="submit" name="Save">
+		</fieldset>
+	</form>
+	<a id="button_quit" href="/switches/{{switch.id}}">Quit</a>
+
+</body>
+</html>

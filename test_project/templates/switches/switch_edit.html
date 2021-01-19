@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Edit Switch</title>
+<style>
+body{
+	background-color: #e7e7e7;
+}
+.a{
+	box-sizing: border-box;
+	display: inline-block;
+	font-style: initial;
+	text-decoration:none;
+	padding: 5px;
+	border:3px black solid;
+	margin-top: 10px;
+	color:white;
+	background-color: coral;
+}
+.a:hover{
+	color: red;
+	background-color: #454545;
+	font-style: italic;
+}
+h6{
+	margin:0;
+	padding: 0;
+	color: red;
+	font-size: 15px;
+}
+
+
+</style>
+</head>
+<body>
+	<form method="POST">{% csrf_token %}
+		<fieldset>
+			<legend>Switch info:</legend>
+			<p>IP: {{switch.IP}}</p>
+			<p>Device: {{switch.device}}</p>
+			{% if error %}{% include "error_case.html" %}{% endif %}
+			<p><label for="id_password">Password:</label> <input type="text" name="password" maxlength="25" id="id_password" value="{{switch.password}}"></p>
+			<p><label for="id_username">Username:</label> <input type="text" name="username" maxlength="25" required="" value="{{switch.username}}" id="id_username"></p>
+			{{form_dev.as_p}}
+			<input type="submit" name="Save">
+		</fieldset>
+	</form>
+	<a class="a" href="/switches/{{switch.id}}">Quit</a>
+</body>
+</html>

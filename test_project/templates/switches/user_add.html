@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>New User</title>
+<style>
+body{
+	background-color: #d5d5d5;
+	height: 100%;
+}
+div{
+	padding: 8px;
+}
+#button_quit{
+	box-sizing: border-box;
+	display: inline-block;
+	font-style: initial;
+	text-decoration:none;
+	padding: 5px;
+	border:2px black solid;
+	width: 60px;
+	text-align:center;
+	margin-top: 10px;
+	color:black;
+	background-color: coral;
+}
+#button_quit:hover{	color: red;}
+</style>
+</head>
+<body>
+	<form method="POST">
+		{% csrf_token %}
+		<fieldset>
+			<legend>User info:</legend>
+				<p><label for="id_username">Username:</label> <input type="text" name="username" maxlength="150" autofocus="" required="" id="id_username"></p>
+				<p><label for="id_password1">Password:</label> <input type="password" name="password1" required="" id="id_password1"></p>
+				<p><label for="id_password2">Password confirmation:</label> <input type="password" name="password2" required="" id="id_password2"></p>
+				{% if error %}{% include "error_case.html" %}{% endif %}
+				<input type="submit" name="Save">
+		</fieldset>
+	</form>
+	<a id="button_quit" href="/">Quit</a>
+
+
+</body>
+</html>

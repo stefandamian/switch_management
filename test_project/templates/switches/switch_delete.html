@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Delete Switch {{switch.id}}?</title>
+<style>
+body{
+	background-color: #e5e5e5;
+}
+i{
+	font-style: initial;
+	font-size: 17px;
+}
+h1{
+}
+</style>
+</head>
+<body>
+	<h1 title="Sure?">Are you sure you want to delete the switch?</h1>
+	<b title="{{switch.id}}">Switch info</b>:<br>
+	<b>IP</b>: <i>{{switch.IP}}</i>,<br> 
+	<b>username</b>: <i>{{switch.username}}</i>,
+	<br><b>password:</b> <i>{% if switch.password == "BLANK" %}no password{%else%}{{switch.password}}{%endif%}</i> </div>
+	<form action="/switches/deleted{{switch.id}}" method="POST">
+		{% csrf_token %}
+		<input type="submit" name="yes" value="Yes">
+	</form>
+	<form action="/switches/{{switch.id}}" method="GET">
+		<input type="submit" name="no" value="No">
+	</form>
+</body>
+</html>

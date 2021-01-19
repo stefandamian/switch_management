@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Add Port for Switch {{switch.IP}}}</title>
+<style>
+body{
+	background-color: #e7e7e7;
+}
+a{
+	box-sizing: border-box;
+	display: inline-block;
+	font-style: initial;
+	text-decoration:none;
+	padding: 5px;
+	border:3px black solid;
+	margin-top: 10px;
+	color:white;
+	background-color: coral;
+}
+a:hover{
+	color: red;
+	background-color: #454545;
+	font-style: italic;
+}
+
+
+</style>
+</head>
+<body>
+	<form method="POST">
+		<fieldset>
+			{% csrf_token %}
+			<legend>Port info:</legend>
+			<div>Switch {{switch.id}}: IP: {{switch.IP}}</div>
+			{{form.as_p}}
+			<input type="submit" name="Save">
+		</fieldset>
+	</form>
+	<a href="/switches/{{switch.id}}">Quit</a>
+</body>
+</html>

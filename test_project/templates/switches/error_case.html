@@ -1,0 +1,45 @@
+{% if error == "user" %}
+	<h6> Wrong username or password </h6>
+{%endif%}
+{% if error == "unknown" %}
+	<h6> Something went wrong </h6>
+{%endif%}
+{% if error == "not_reachable" %}
+	<h6> Host not reachable </h6>
+{% endif %}
+{% if error == "not_supported" %}
+	<h6> Device type not supported </h6>
+{%endif%}
+{% if error == "permission_denied" %}
+	<h6> You don't have the permision to edit this switch </h6>
+{%endif%}
+{% if error == "permission_denied_admin" %}
+	<h6> Can't do this change to the system </h6>
+{%endif%}
+{%if error == 'used_vlan_name'%}
+	<h6> Already exist a vlan with this name </h6>
+{%endif%}
+{%if error == 'used_VID'%}
+	<h6> Already exist a vlan with this Vlan ID</h6>
+{%endif%}
+{%if error == 'name_error'%}
+	<h6> This name can't be used </h6>
+{%endif%}
+{%if error == 'need_refresh'%}
+	<h6> Please refresh the data </h6>
+{%endif%}
+{%if error == 'conf_password_error'%}
+	<h6> The passworld doesn't match </h6>
+{%endif%}
+{%if error == 'username_used'%}
+	<h6>Username already used</h6>
+{%endif%}
+{%if error == 'wrong_username'%}
+	<h6 style="text-align: left;margin-left: 70px;">Wrong username</h6>
+{%endif%}
+{%if error == 'wrong_password'%}
+	<h6 style="text-align: left;margin-left: 70px;">Wrong password</h6>
+{%endif%}
+{% if error == 'select_error' %}
+	<h6>Please select ports</h6>
+{%endif%}

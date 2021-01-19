@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Switches</title>
+<style>
+ {% include 'switches/static/css/index.css' %}
+
+
+</style>
+
+</head>
+
+<body>
+	<div id="navbar">
+		<a href="/switches">Home</a>
+		<a href="/" style="float:right">Logout</a>
+		{% if user.is_superuser %}
+		<a href="/admin" style="float:right">Admin</a>
+		{%endif%}
+		<div id="dropswitches">
+			<button id="dropbtn">Switches</button>
+    		<div id="dropdown-content">
+      			{% for i in user.switches.all %}
+      				<a href="/switches/{{i.id}}">{{i.IP}}</a>
+      			{% endfor %}
+      		</div>
+  		</div>
+	</div> 
+	<div id="inside">
+		<h3>
+			Switches list
+		</h3>
+		<br>
+		<ui>
+			{% for s in switches %}
+				<li><a href="/switches/{{s.id}}">{{s.IP}}</a></li>
+			{% endfor %}
+		</ui>
+		<br>
+		<a href="/switches/add" class="add">Add switch here</a>
+	</div>
+</body>
+<script>
+	
+	function switches(arr){
+		for (var i = 0; i < arr.length; i++) {
+			console.log(arr[i])
+		}
+	}
+</script>
+</html>

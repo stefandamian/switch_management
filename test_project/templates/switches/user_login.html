@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login</title>
+<style>
+body{
+	margin:0;
+	background-color: #d5d5d5;
+	height: 100%;
+}
+a{
+	color: black;
+	text-decoration: none;
+}
+#button_add, #button_admin
+{
+	box-sizing: border-box;
+	display: inline-block;
+	text-align:right;
+	margin: 0;
+	color: white;
+	padding:12px;
+	position: right;
+	float:right;
+	text-align: center;
+}
+#button_add:hover, #button_admin:hover{
+	background-color: red;
+}
+
+#data{
+	font-size: 20px; 
+	text-align:center;
+	width: 450px;
+	margin-top: 100px; 
+	margin-left:auto; 
+	margin-right: auto;
+}
+#nav {
+	display: block;
+	position: right;
+	margin: 0;
+	padding: 0px;
+	background-color: #333;
+	overflow: hidden;
+}
+</style>
+</head>
+<body>
+	<div id='nav'>
+		
+		<a id="button_add" style="float:left" href="/register">Register</a>
+		<a id="button_admin" href="/admin">Admin</a>
+	</div>
+	<form method="POST">
+		{% csrf_token %}
+		<fieldset id="data">
+			<legend>User info:</legend>
+				<p><label for="id_username">Username:</label> <input type="text" name="username" maxlength="150" required="" id="id_username"></p>
+				<p><label for="id_password">Password:</label> <input type="password" name="password" maxlength="128" required="" id="id_password"></p>
+				{% if error %}{% include "error_case.html" %}{% endif %}
+				<input type="submit" name="Submit"  >
+		</fieldset>
+	</form>
+
+
+</body>
+</html>
